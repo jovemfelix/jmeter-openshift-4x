@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  generation: 1
+  labels:
+    run: jmeter-master
+    jmeter_mode: master
+  name: jmeter-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: jmeter-master
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: jmeter-master
+    spec:
+      containers:
+      - image: quay.io/rfelix/jmeter-master:1.0
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 30; done;" ]
+        imagePullPolicy: Always
+        name: jmeter-master
+        ports:
+        - containerPort: 60000
+          protocol: TCP
+        volumeMounts:
+          - name: loadtest
+            mountPath: /jmeter/load_test
+            subPath: "load_test"
+      volumes:
+      - name: loadtest
+        configMap:
+         name: jmeter-load-test

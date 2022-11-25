@@ -1,0 +1,36 @@
+#!/bin/bash
+#Script created to invoke jmeter test script with the slave POD IP addresses
+#Script should be run like: ./load_test "path to the test script in jmx format"
+
+
+export OUTPUT_FOLDER=/tmp/results
+mkdir -p $OUTPUT_FOLDER
+
+export TEST_PLAN=$1
+export TEST_PLAN_NAME=$(basename "$TEST_PLAN" ".jmx")
+export REMOTE_START=$(getent ahostsv4 jmeter-slave-svc | cut -d' ' -f1 | sort -u | awk -v ORS=, '{print $1}' | sed 's/,$//')
+printf "\nSTART Running Jmeter [%s] on `date`\n" "$TEST_PLAN"
+cat <<EOF
+++++++++++++++++++++++++++++++++++++++++++
+JMETER_HOME=[$JMETER_HOME]
+-t=["$TEST_PLAN"]
+-l=["$OUTPUT_FOLDER/${TEST_PLAN}.jtl"]
+-Dserver.rmi.ssl.disable=true
+-e
+-o=["$OUTPUT_FOLDER/${TEST_PLAN}-report"]
+-R=["$REMOTE_START"]
+++++++++++++++++++++++++++++++++++++++++++
+
+EOF
+# -R, --remotestart <argument> - Start these remote servers (overrides remote_hosts)
+$JMETER_HOME/bin/jmeter -n \
+  -t "$TEST_PLAN" \
+  -l "$OUTPUT_FOLDER/${TEST_PLAN_NAME}.jtl" \
+  -Dserver.rmi.ssl.disable=true \
+  -e \
+  -o "$OUTPUT_FOLDER/${TEST_PLAN_NAME}-report" \
+  -R "$REMOTE_START"
+
+printf "\nZipping report\n"
+tar -cvf $OUTPUT_FOLDER/"${TEST_PLAN_NAME}".tar "$OUTPUT_FOLDER/${TEST_PLAN_NAME}-report"
+rm -rf "$OUTPUT_FOLDER/${TEST_PLAN_NAME}-report"

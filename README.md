@@ -1,21 +1,53 @@
-# Jmeter Cluster Support for Kubernetes and OpenShift
+# jmeter-openshift
+Run Apache Jmeter on OpenShift 4x
 
-## Prerequisits
+* make the cluster setup 
+* run distributed load testing
 
-Kubernetes > 1.16
+## Prerequisites
+* Running OpenShift cluster (tested on v4.10)
 
-OpenShift version > 3.5
+  ```shell
+  ❯ oc version
+  Client Version: 4.10.32
+  Server Version: 4.10.22
+  Kubernetes Version: v1.23.5+3afdacb
+  ```
 
-## TL;DR
+* a jmx file to load into the Jmeter cluster
 
-```bash
-./dockerimages.sh
-./jmeter_cluster_create.sh
-./dashboard.sh
-./start_test.sh
-```
+  * Testes with JMETER 5.5
 
-Please follow the guide "Load Testing Jmeter On Kubernetes" on our medium blog post:
+  ```shell
+  ❯ sh $JMETER_HOME/bin/jmeter.sh --version
+      _    ____   _    ____ _   _ _____       _ __  __ _____ _____ _____ ____
+     / \  |  _ \ / \  / ___| | | | ____|     | |  \/  | ____|_   _| ____|  _ \
+    / _ \ | |_) / _ \| |   | |_| |  _|    _  | | |\/| |  _|   | | |  _| | |_) |
+   / ___ \|  __/ ___ \ |___|  _  | |___  | |_| | |  | | |___  | | | |___|  _ <
+  /_/   \_\_| /_/   \_\____|_| |_|_____|  \___/|_|  |_|_____| |_| |_____|_| \_\ 5.5
+  
+  Copyright (c) 1999-2022 The Apache Software Foundation
+  ```
 
-https://goo.gl/mkoX9E
+* Java 11
 
+  ```shell
+  ❯ java --version
+  openjdk 11.0.11 2021-04-20
+  OpenJDK Runtime Environment AdoptOpenJDK-11.0.11+9 (build 11.0.11+9)
+  OpenJDK 64-Bit Server VM AdoptOpenJDK-11.0.11+9 (build 11.0.11+9, mixed mode)
+  ```
+
+## To Run
+
+    ``` shell
+    ❯ # name of namespace to be created! 
+    ❯ export JMETER_NAMESPACE=rfelix-jmeter
+    ❯ sh scripts/jmeter_cluster_create.sh
+    ❯ sh scripts/dashboard.sh
+    ❯ sh scripts/start_test.sh
+    ```
+
+# References
+* https://blog.kubernauts.io/load-testing-as-a-service-with-jmeter-on-kubernetes-fc5288bb0c8b
+* https://github.com/jiajunngjj/jmeter-openshift

@@ -1,0 +1,4 @@
+FROM quay.io/rfelix/jmeter-base:1.0
+MAINTAINER Renato Felix
+		
+EXPOSE 60000
